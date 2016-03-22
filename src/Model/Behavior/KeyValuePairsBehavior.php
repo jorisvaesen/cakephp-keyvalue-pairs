@@ -112,7 +112,7 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return \Cake\ORM\Query The query builder
      */
-    public function _queryBuilder()
+    private function _queryBuilder()
     {
         $q = $this->_table->find('list', [
                 'keyField' => $this->config('fields.key'),
