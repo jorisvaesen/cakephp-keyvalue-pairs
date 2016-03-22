@@ -11,6 +11,14 @@ Map key-value pairs between datasource and application.
 
 ## Usage
 
+### Attach behavior
+
+```php
+    $this->addBehavior('Jorisvaesen/KeyValuePairs.KeyValuePairs', [
+        // Here you can override the default options
+    ]);
+```
+
 ### Options
 
 * fields
