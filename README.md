@@ -6,3 +6,18 @@ Map key-value pairs between datasource and application.
 
 * PHP 5.4
 * CakePHP 3.0+
+
+## Installation
+
+## Usage
+
+### Options
+
+* fields
+⋅⋅* key
+⋅⋅* value
+* scope
+* preventDeletion
+* allowedKeys
+* cache
+* cacheKey
