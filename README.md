@@ -35,10 +35,10 @@ Enable plugin by adding this line to your bootstrap.php:
 
 | Key  | Default | Description |
 | ------------- | ------------- | ------------- |
-| fields.key  | `'key'` |   |
-| fields.value  | `'value'`  |   |
-| scope  | `false`  |   |
-| preventDeletion  | `false`  |   |
-| allowedKeys  | `false`  |   |
-| cache  | `false`  |   |
-| cacheKey  | `'default'`  |   |
+| fields.key  | `'key'` | Name of the key field |
+| fields.value  | `'value'`  | Name of the value field |
+| scope  | `false`  | If you want to set extra conditions |
+| preventDeletion  | `false`  | Prevent pairs from being deleted. `true` to allow no deletion, `array` to specify keys |
+| allowedKeys  | `false`  | `array`` of allowed keys or `false` to allow any |
+| cache  | `false`  | Enable or disable caching  |
+| cacheKey  | `'default'`  | A custom cacheKey that should be used |
