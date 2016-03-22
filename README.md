@@ -9,6 +9,18 @@ Map key-value pairs between datasource and application.
 
 ## Installation
 
+Using composer:
+
+```
+    composer require jorisvaesen/cakephp-keyvalue-pairs
+```
+
+Enable plugin by adding this line to your bootstrap.php:
+
+```php
+    Plugin::load('Jorisvaesen/KeyValuePairs');
+```
+
 ## Usage
 
 ### Attach behavior
