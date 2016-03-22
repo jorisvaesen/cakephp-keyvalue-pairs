@@ -12,13 +12,13 @@ Map key-value pairs between datasource and application.
 Using composer:
 
 ```
-    composer require jorisvaesen/cakephp-keyvalue-pairs
+composer require jorisvaesen/cakephp-keyvalue-pairs
 ```
 
 Enable plugin by adding this line to your bootstrap.php:
 
 ```php
-    Plugin::load('Jorisvaesen/KeyValuePairs');
+Plugin::load('Jorisvaesen/KeyValuePairs');
 ```
 
 ## Usage
@@ -26,9 +26,9 @@ Enable plugin by adding this line to your bootstrap.php:
 ### Attach behavior
 
 ```php
-    $this->addBehavior('Jorisvaesen/KeyValuePairs.KeyValuePairs', [
-        // Here you can override the default options
-    ]);
+$this->addBehavior('Jorisvaesen/KeyValuePairs.KeyValuePairs', [
+    // Here you can override the default options
+]);
 ```
 
 ### Options
