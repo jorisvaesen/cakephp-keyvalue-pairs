@@ -3,9 +3,11 @@
 namespace Jorisvaesen\KeyValuePairs\Model\Behavior;
 
 use ArrayObject;
+use Cake\Cache\Cache;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
+use Cake\Utility\Hash;
 
 class KeyValuePairsBehavior extends Behavior
 {
@@ -31,14 +33,14 @@ class KeyValuePairsBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        if ($this->config('allowedKeys') && !in_array($entity->{$this->_table->primaryKey()}, $this->config('allowedKeys'))) {
+        if ($this->config('allowedKeys') && !in_array($entity->{$this->config('fields.key')}, $this->config('allowedKeys'))) {
             $event->stopPropagation();
             return false;
         }
     }
 
     /**
-     * Checks if deletion of a record is allowed
+     * Checks if deletion is allowed
      *
      * @param \Cake\Event\Event $event The beforeSave event that was fired
      * @param \Cake\ORM\Entity $entity The entity that is going to be saved
@@ -47,24 +49,28 @@ class KeyValuePairsBehavior extends Behavior
      */
     public function beforeDelete(Event $event, Entity $entity, ArrayObject $options)
     {
-        if (!$this->config('allowDeletion')) {
+        if ((is_array($this->config('preventDeletion')) && in_array($entity->{$this->config('fields.key')}, $this->config('preventDeletion'))) || $this->config('preventDeletion')) {
             $event->stopPropagation();
             return false;
         }
     }
 
     /**
-     * Get value from datasource
+     * Get value by key
      *
      * @param string $key The key you want the value of
      * @return string|bool
      */
     public function getValueByKey($key)
     {
-        $pair = $this->queryBuilder()
-                            ->where([$this->config('fields.key') => $key])
-                            ->limit(1)
-                            ->toArray();
+        if ($this->config('cache')) {
+            $pair = $this->_keysFromCache([$key]);
+        } else {
+            $pair = $this->_queryBuilder()
+                ->andWhere([$this->config('fields.key') => $key])
+                ->limit(1)
+                ->toArray();
+        }
 
         if (!$pair) {
             return false;
@@ -74,7 +80,7 @@ class KeyValuePairsBehavior extends Behavior
     }
 
     /**
-     * Get value from datasource
+     * Get many values by keys
      *
      * @param array $keys The keys you want the value of
      * @param bool $requireAll Fail if not all keys exist
@@ -82,13 +88,17 @@ class KeyValuePairsBehavior extends Behavior
      */
     public function getValuesByKeys(array $keys, $requireAll = true)
     {
-        $keyField = $this->config('fields.key');
+        if ($this->config('cache')) {
+            $pairs = $this->_keysFromCache($keys);
+        } else {
+            $keyField = $this->config('fields.key');
+            $pairs = $this->_queryBuilder()
+                ->andWhere(function ($exp, $q) use ($keyField, $keys) {
+                    return $exp->in($keyField, $keys);
+                })
+                ->toArray();
+        }
 
-        $pairs = $this->queryBuilder()
-                            ->where(function ($exp, $q) use ($keyField, $keys) {
-                                return $exp->in($keyField, $keys);
-                            })
-                            ->toArray();
 
         if (!count($pairs) || ($requireAll && count($keys) != count($pairs))) {
             return false;
@@ -102,14 +112,45 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return \Cake\ORM\Query The query builder
      */
-    private function queryBuilder()
+    private function _queryBuilder()
     {
-        return $this->_table->table()
-                                ->find('list', [
-                                    'keyField' => $this->config('fields.key'),
-                                    'valueField' => $this->config('fields.value')
-                                ])
-                                ->contain([])
-                                ->hydrate(false);
+        $q = $this->_table
+            ->find('list', [
+                'keyField' => $this->config('fields.key'),
+                'valueField' => $this->config('fields.value')
+            ])
+            ->contain([])
+            ->hydrate(false);
+
+        if ($this->config('scope')) {
+            $q->andWhere($this->config('scope'));
+        }
+
+        return $q;
+    }
+
+    /**
+     * Filter needed keys from cache
+     *
+     * @param array $keys The keys you want the values of
+     * @return array The key value pairs
+     */
+    private function _keysFromCache(array $keys)
+    {
+        $pairs = $this->_cache();
+        return array_intersect($pairs, Hash::normalize($keys));
+    }
+
+    /**
+     * Read cache
+     *
+     * @return array All saved key value pairs
+     */
+    private function _cache()
+    {
+        $queryBuilder = $this->_queryBuilder();
+        return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder) {
+            return $queryBuilder->toArray();
+        }, $this->config('cacheKey'));
     }
 }
