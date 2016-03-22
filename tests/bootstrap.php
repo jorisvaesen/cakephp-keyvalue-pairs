@@ -45,14 +45,14 @@ $cache = [
     ],
     '_cake_core_' => [
         'className' => 'File',
-        'prefix' => 'upload_myapp_cake_core_',
+        'prefix' => 'key_value_pairs_cake_core_',
         'path' => CACHE . 'persistent/',
         'serialize' => true,
         'duration' => '+10 seconds'
     ],
     '_cake_model_' => [
         'className' => 'File',
-        'prefix' => 'upload_my_app_cake_model_',
+        'prefix' => 'key_value_pairs_cake_model_',
         'path' => CACHE . 'models/',
         'serialize' => 'File',
         'duration' => '+10 seconds'
@@ -64,7 +64,7 @@ Cake\Core\Configure::write('Session', [
     'defaults' => 'php'
 ]);
 
-Cake\Core\Plugin::load('Josegonzalez/Upload', ['path' => ROOT . DS, 'autoload' => true]);
+Cake\Core\Plugin::load('JorisVaesen/KeyValuePairs', ['path' => ROOT . DS, 'autoload' => true]);
 
 // Ensure default test connection is defined
 if (!getenv('db_dsn')) {
