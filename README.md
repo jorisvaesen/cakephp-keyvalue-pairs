@@ -1,8 +1,8 @@
-h1. cakephp-3-pairs
+# CakePHP 3 Key Value Pairs
 
 Map key-value pairs between datasource and application.
 
-h2. Requirements
+## Requirements
 
 * PHP 5.4
 * CakePHP 3.0+
