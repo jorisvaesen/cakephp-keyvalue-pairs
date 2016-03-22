@@ -14,8 +14,8 @@ Map key-value pairs between datasource and application.
 ### Options
 
 * fields
-⋅⋅* key
-⋅⋅* value
+  * key
+  * value
 * scope
 * preventDeletion
 * allowedKeys
