@@ -1,0 +1,33 @@
+{
+    "name": "jorisvaesen/cakephp-keyvalue-pairs",
+    "description": "CakePHP plugin to handle key-value pairs to be mapped between datasource and application",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "key-value pairs"],
+    "homepage": "https://github.com/jorisvaesen/cakephp-keyvalue-pairs",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joris Vaesen"
+        }
+    ],
+    "require": {
+        "cakephp/cakephp": "~3.0",
+        "php": ">=5.5"
+    },
+    "require-dev": {
+        "cakephp/cakephp": "~3.0",
+        "phpunit/phpunit": "4.1.*",
+        "cakephp/cakephp-codesniffer": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "JorisVaesen\\KeyvaluePairs\\": "src",
+            "JorisVaesen\\KeyvaluePairs\\Test\\Fixture\\": "tests\\Fixture"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JorisVaesen\\KeyvaluePairs\\Test\\": "tests"
+        }
+    }
+}
