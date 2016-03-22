@@ -1,13 +1,13 @@
 <?php
 
-namespace Jorisvaesen\KeyvaluePairs\Model\Behavior;
+namespace Jorisvaesen\KeyValuePairs\Model\Behavior;
 
 use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 
-class KeyvaluePairsBehavior extends Behavior
+class KeyValuePairsBehavior extends Behavior
 {
     protected $_defaultConfig = [
         'fields' => [

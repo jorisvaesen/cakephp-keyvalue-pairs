@@ -21,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "JorisVaesen\\KeyvaluePairs\\": "src",
-            "JorisVaesen\\KeyvaluePairs\\Test\\Fixture\\": "tests\\Fixture"
+            "JorisVaesen\\KeyValuePairs\\": "src",
+            "JorisVaesen\\KeyValuePairs\\Test\\Fixture\\": "tests\\Fixture"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JorisVaesen\\KeyvaluePairs\\Test\\": "tests"
+            "JorisVaesen\\KeyValuePairs\\Test\\": "tests"
         }
     }
 }
