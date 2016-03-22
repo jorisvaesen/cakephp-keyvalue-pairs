@@ -35,9 +35,16 @@ Enable plugin by adding this line to your bootstrap.php:
 
 * fields
   * key
+    * default: `(string) key`
   * value
+    * default: `(string) value`
 * scope
+  * default: `(boolean) false`
 * preventDeletion
+  * default: `(boolean) false`
 * allowedKeys
-* cache
+  * default: `(boolean) false`
+* cache `
+  * default: `(boolean) false`
 * cacheKey
+  * default: `(string) default`
