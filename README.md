@@ -33,18 +33,12 @@ Enable plugin by adding this line to your bootstrap.php:
 
 ### Options
 
-* fields
-  * key
-      Default: `(string) key`
-  * value
-      Default: `(string) value`
-* scope
-    Default: `(boolean) false`
-* preventDeletion
-    Default: `(boolean) false`
-* allowedKeys
-    Default: `(boolean) false`
-* cache `
-    Default: `(boolean) false`
-* cacheKey
-    Default: `(string) default`
+| Key  | Default | Description |
+| ------------- | ------------- | ------------- |
+| fields.key  | `'key'` |   |
+| fields.value  | `'value'`  |   |
+| scope  | `false`  |   |
+| preventDeletion  | `false`  |   |
+| allowedKeys  | `false`  |   |
+| cache  | `false`  |   |
+| cacheKey  | `'default'`  |   |
