@@ -1,6 +1,6 @@
 <?php
 
-namespace Jorisvaesen\KeyValuePairs\Model\Behavior;
+namespace JorisVaesen\KeyValuePairs\Model\Behavior;
 
 use ArrayObject;
 use Cake\Cache\Cache;
@@ -33,7 +33,7 @@ class KeyValuePairsBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
-        if ($this->config('allowedKeys') && !in_array($entity->{$this->config('fields.key')}, $this->config('allowedKeys'))) {
+        if (is_array($this->config('allowedKeys')) && !in_array($entity->{$this->config('fields.key')}, $this->config('allowedKeys'))) {
             $event->stopPropagation();
             return false;
         }
@@ -49,7 +49,7 @@ class KeyValuePairsBehavior extends Behavior
      */
     public function beforeDelete(Event $event, Entity $entity, ArrayObject $options)
     {
-        if ((is_array($this->config('preventDeletion')) && in_array($entity->{$this->config('fields.key')}, $this->config('preventDeletion'))) || $this->config('preventDeletion')) {
+        if ($this->config('preventDeletion') === true || (is_array($this->config('preventDeletion')) && in_array($entity->{$this->config('fields.key')}, $this->config('preventDeletion')))) {
             $event->stopPropagation();
             return false;
         }
@@ -112,10 +112,9 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return \Cake\ORM\Query The query builder
      */
-    private function _queryBuilder()
+    public function _queryBuilder()
     {
-        $q = $this->_table
-            ->find('list', [
+        $q = $this->_table->find('list', [
                 'keyField' => $this->config('fields.key'),
                 'valueField' => $this->config('fields.value')
             ])
