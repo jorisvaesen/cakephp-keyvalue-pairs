@@ -42,7 +42,9 @@ class KeyValuePairBehaviorTest extends TestCase
             'path' => CACHE
         ]);
 
-        if (!empty($_ENV['db_dsn'])) {
+        $db_dsn = Hash::get($_ENV, 'db_dsn', getenv('db_dsn'));
+
+        if ($db_dsn) {
             ConnectionManager::config('test', ['url' => $_ENV['db_dsn']]);
             $this->datasourceConnection = 'test';
         }
