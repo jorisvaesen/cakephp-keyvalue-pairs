@@ -201,18 +201,6 @@ class KeyValuePairBehaviorTest extends TestCase
     public function testFindPair()
     {
         $this->loadFixtures('Configs');
-
-        $table = new Table([
-            'table' => 'configs',
-            'alias' => 'Configs',
-            'schema' => [
-                'id' => ['type' => 'integer'],
-                'key' => ['type' => 'string'],
-                'value' => ['type' => 'string']
-            ],
-            'connection' => ConnectionManager::get('test')
-        ]);
-
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
         $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
@@ -221,18 +209,6 @@ class KeyValuePairBehaviorTest extends TestCase
     public function testFindPairNotExistingKey()
     {
         $this->loadFixtures('Configs');
-
-        $table = new Table([
-            'table' => 'configs',
-            'alias' => 'Configs',
-            'schema' => [
-                'id' => ['type' => 'integer'],
-                'key' => ['type' => 'string'],
-                'value' => ['type' => 'string']
-            ],
-            'connection' => ConnectionManager::get('test')
-        ]);
-
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
         $this->assertFalse($behavior->findPair('not_existing_key'));
@@ -240,14 +216,12 @@ class KeyValuePairBehaviorTest extends TestCase
 
     public function testQueryBuilder()
     {
-
         $method = new \ReflectionMethod(
             'JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior',
             '_queryBuilder'
         );
         $method->setAccessible(true);
         $query = $method->invoke(new KeyValuePairsBehavior($this->table, []));
-
         $this->assertInstanceOf('Cake\ORM\Query', $query);
         $this->assertNull($query->clause('where'));
     }
