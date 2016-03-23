@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Utility\Hash;
 use JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior;
 
 class KeyValuePairBehaviorTest extends TestCase
@@ -21,6 +22,7 @@ class KeyValuePairBehaviorTest extends TestCase
     private $table;
     private $entity;
     private $behaviorMethods;
+    private $datasourceConnection = 'default';
 
     public function setUp()
     {
@@ -39,6 +41,11 @@ class KeyValuePairBehaviorTest extends TestCase
             'duration' => '+1 week',
             'path' => CACHE
         ]);
+
+        if (!empty($_ENV['db_dsn'])) {
+            ConnectionManager::config('test', ['url' => $_ENV['db_dsn']]);
+            $this->datasourceConnection = 'test';
+        }
     }
 
     public function tearDown()
@@ -205,7 +212,7 @@ class KeyValuePairBehaviorTest extends TestCase
                 'key' => ['type' => 'string'],
                 'value' => ['type' => 'string']
             ],
-            'connection' => ConnectionManager::get('default')
+            'connection' => ConnectionManager::get($this->datasourceConnection)
         ]);
 
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
@@ -225,7 +232,7 @@ class KeyValuePairBehaviorTest extends TestCase
                 'key' => ['type' => 'string'],
                 'value' => ['type' => 'string']
             ],
-            'connection' => ConnectionManager::get('default')
+            'connection' => ConnectionManager::get($this->datasourceConnection)
         ]);
 
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
