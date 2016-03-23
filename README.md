@@ -1,4 +1,4 @@
-# CakePHP 3 Key Value Pairs ![alt tag](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs.svg?branch=master)
+# CakePHP 3 Key Value Pairs [![travis ci](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs.svg?branch=master)](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs) [![Coverage Status](https://coveralls.io/repos/github/jorisvaesen/cakephp-keyvalue-pairs/badge.svg?branch=master)](https://coveralls.io/github/jorisvaesen/cakephp-keyvalue-pairs?branch=master)
 
 Map key-value pairs between datasource and application.
 
