@@ -246,7 +246,8 @@ class KeyValuePairBehaviorTest extends TestCase
         ]);
 
         $method = new \ReflectionMethod(
-            'JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', '_queryBuilder'
+            'JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior',
+            '_queryBuilder'
         );
         $method->setAccessible(true);
         $query = $method->invoke(new KeyValuePairsBehavior($table, []));
