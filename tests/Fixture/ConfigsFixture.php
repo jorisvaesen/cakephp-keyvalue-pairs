@@ -22,9 +22,9 @@ class ConfigsFixture extends TestFixture
      * @var array
      */
     public $records = [
-        ['key' => 'invoice_prefix', 'value' => 'INV-2016'],
-        ['key' => 'invoice_next_number', 'value' => '1234'],
-        ['key' => 'project_prefix', 'value' => 'PROJ-2016'],
-        ['key' => 'project_next_number', 'value' => '123']
+        ['id' => 1, 'key' => 'invoice_prefix', 'value' => 'INV-2016'],
+        ['id' => 2, 'key' => 'invoice_next_number', 'value' => '1234'],
+        ['id' => 3, 'key' => 'project_prefix', 'value' => 'PROJ-2016'],
+        ['id' => 4, 'key' => 'project_next_number', 'value' => '123']
     ];
 }
