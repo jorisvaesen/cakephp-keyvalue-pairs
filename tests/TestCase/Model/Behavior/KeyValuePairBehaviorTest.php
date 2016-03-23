@@ -30,12 +30,10 @@ class KeyValuePairBehaviorTest extends TestCase
 
         $this->tableMock = $this->getMock('Cake\ORM\Table');
         $this->behaviorMethods = get_class_methods('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior');
-
         $this->entity = new Entity([
             'key' => 'key1',
             'value' => 'value1'
         ]);
-
         $this->table = new Table([
             'table' => 'configs',
             'alias' => 'Configs',
@@ -47,7 +45,6 @@ class KeyValuePairBehaviorTest extends TestCase
     public function tearDown()
     {
         parent::tearDown();
-
         TableRegistry::clear();
     }
 
@@ -56,7 +53,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'allowedKeys' => false
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -68,7 +64,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'allowedKeys' => ['key5', 'key6', 'key7']
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -80,7 +75,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'allowedKeys' => ['key1', 'key2', 'key3']
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -93,7 +87,6 @@ class KeyValuePairBehaviorTest extends TestCase
             'cache' => true,
             'cacheKey' => 'configs'
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'afterSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
         Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheKey']);
@@ -108,7 +101,6 @@ class KeyValuePairBehaviorTest extends TestCase
             'cache' => true,
             'cacheKey' => 'configs'
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'afterSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
         Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', 'default');
@@ -122,7 +114,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'preventDeletion' => false
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -134,7 +125,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'preventDeletion' => true
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -146,7 +136,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'preventDeletion' => ['key5', 'key6', 'key7']
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -158,7 +147,6 @@ class KeyValuePairBehaviorTest extends TestCase
         $settings = [
             'preventDeletion' => ['key1', 'key2', 'key3']
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'beforeDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
 
@@ -171,7 +159,6 @@ class KeyValuePairBehaviorTest extends TestCase
             'cache' => true,
             'cacheKey' => 'configs'
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'afterDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
         Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheKey']);
@@ -186,7 +173,6 @@ class KeyValuePairBehaviorTest extends TestCase
             'cache' => true,
             'cacheKey' => 'configs'
         ];
-
         $methods = array_diff($this->behaviorMethods, ['config', 'afterDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
         Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', 'default');
@@ -236,9 +222,10 @@ class KeyValuePairBehaviorTest extends TestCase
 
     public function testQueryBuilderWithScope()
     {
+        $this->loadFixtures('Configs');
         $settings = [
             'scope' => [
-                'is_deleted' => 1
+                'deleted' => 1
             ]
         ];
         $method = new \ReflectionMethod(
@@ -248,6 +235,7 @@ class KeyValuePairBehaviorTest extends TestCase
         $method->setAccessible(true);
         $query = $method->invoke(new KeyValuePairsBehavior($this->table, $settings));
         $this->assertInstanceOf('Cake\ORM\Query', $query);
-        $this->assertContains('WHERE "is_deleted" =', $query->sql());
+        $this->assertEquals(2, $query->count());
+        $this->assertContains('deleted', $query->sql());
     }
 }

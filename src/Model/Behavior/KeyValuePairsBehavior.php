@@ -152,7 +152,7 @@ class KeyValuePairsBehavior extends Behavior
             ->hydrate(false);
 
         if ($this->config('scope')) {
-            $q->where($this->config('scope'));
+            $q->andWhere($this->config('scope'));
         }
 
         return $q;
