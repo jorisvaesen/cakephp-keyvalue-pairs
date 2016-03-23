@@ -94,9 +94,9 @@ class KeyValuePairsBehavior extends Behavior
     public function getValueByKey($key)
     {
         if ($this->config('cache')) {
-            $pair = $this->_keysFromCache([$key]);
+            $pair = $this->__keysFromCache([$key]);
         } else {
-            $pair = $this->_queryBuilder()
+            $pair = $this->__queryBuilder()
                 ->andWhere([$this->config('fields.key') => $key])
                 ->limit(1)
                 ->toArray();
@@ -119,10 +119,10 @@ class KeyValuePairsBehavior extends Behavior
     public function getValuesByKeys(array $keys, $requireAll = true)
     {
         if ($this->config('cache')) {
-            $pairs = $this->_keysFromCache($keys);
+            $pairs = $this->__keysFromCache($keys);
         } else {
             $keyField = $this->config('fields.key');
-            $pairs = $this->_queryBuilder()
+            $pairs = $this->__queryBuilder()
                 ->andWhere(function ($exp, $q) use ($keyField, $keys) {
                     return $exp->in($keyField, $keys);
                 })
@@ -142,7 +142,7 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return \Cake\ORM\Query The query builder
      */
-    private function _queryBuilder()
+    private function __queryBuilder()
     {
         $q = $this->_table->find('list', [
                 'keyField' => $this->config('fields.key'),
@@ -164,7 +164,7 @@ class KeyValuePairsBehavior extends Behavior
      * @param array $keys The keys you want the values of
      * @return array The key value pairs
      */
-    private function _keysFromCache(array $keys)
+    private function __keysFromCache(array $keys)
     {
         $pairs = $this->_cache();
         return array_intersect($pairs, Hash::normalize($keys));
@@ -175,9 +175,9 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return array All saved key value pairs
      */
-    private function _cache()
+    private function __cache()
     {
-        $queryBuilder = $this->_queryBuilder();
+        $queryBuilder = $this->__queryBuilder();
         return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder) {
             return $queryBuilder->toArray();
         }, $this->config('cacheKey'));
