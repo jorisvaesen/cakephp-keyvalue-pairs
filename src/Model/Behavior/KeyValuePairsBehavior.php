@@ -40,11 +40,26 @@ class KeyValuePairsBehavior extends Behavior
     }
 
     /**
+     * Invalidate cache after changes are saved
+     *
+     * @param \Cake\Event\Event $event The afterSave event that was fired
+     * @param \Cake\ORM\Entity $entity The entity that has been saved
+     * @param \ArrayObject $options the options passed to the save method
+     * @return void
+     */
+    public function afterSave(Event $event, Entity $entity, ArrayObject $options)
+    {
+        if ($this->config('cache')) {
+            Cache::delete('key_value_pairs_' . $this->_table->table());
+        }
+    }
+
+    /**
      * Checks if deletion is allowed
      *
-     * @param \Cake\Event\Event $event The beforeSave event that was fired
-     * @param \Cake\ORM\Entity $entity The entity that is going to be saved
-     * @param \ArrayObject $options the options passed to the save method
+     * @param \Cake\Event\Event $event The beforeDelete event that was fired
+     * @param \Cake\ORM\Entity $entity The entity that is going to be deleted
+     * @param \ArrayObject $options the options passed to the delete method
      * @return void|false
      */
     public function beforeDelete(Event $event, Entity $entity, ArrayObject $options)
@@ -52,6 +67,21 @@ class KeyValuePairsBehavior extends Behavior
         if ($this->config('preventDeletion') === true || (is_array($this->config('preventDeletion')) && in_array($entity->{$this->config('fields.key')}, $this->config('preventDeletion')))) {
             $event->stopPropagation();
             return false;
+        }
+    }
+
+    /**
+     * Invalidate cache after deletion
+     *
+     * @param \Cake\Event\Event $event The afterDelete event that was fired
+     * @param \Cake\ORM\Entity $entity The entity that has been saved
+     * @param \ArrayObject $options the options passed to the delete method
+     * @return void
+     */
+    public function afterDelete(Event $event, Entity $entity, ArrayObject $options)
+    {
+        if ($this->config('cache')) {
+            Cache::delete('key_value_pairs_' . $this->_table->table());
         }
     }
 
