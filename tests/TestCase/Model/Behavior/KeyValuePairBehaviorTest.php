@@ -12,6 +12,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior;
+use JorisVaesen\KeyValuePairs\Test\Fixture\ConfigsFixture;
 
 class KeyValuePairBehaviorTest extends TestCase
 {
@@ -38,11 +39,7 @@ class KeyValuePairBehaviorTest extends TestCase
         $this->table = new Table([
             'table' => 'configs',
             'alias' => 'Configs',
-            'schema' => [
-                'id' => ['type' => 'integer'],
-                'key' => ['type' => 'string'],
-                'value' => ['type' => 'string']
-            ],
+            'schema' => (new ConfigsFixture())->fields,
             'connection' => ConnectionManager::get('test')
         ]);
     }
@@ -214,6 +211,17 @@ class KeyValuePairBehaviorTest extends TestCase
         $this->assertFalse($behavior->findPair('not_existing_key'));
     }
 
+    public function testFindPairWithCacheEnabled()
+    {
+        $this->loadFixtures('Configs');
+        $settings = [
+            'cache' => true
+        ];
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+        $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
+    }
+
     public function testQueryBuilder()
     {
         $method = new \ReflectionMethod(
@@ -224,5 +232,22 @@ class KeyValuePairBehaviorTest extends TestCase
         $query = $method->invoke(new KeyValuePairsBehavior($this->table, []));
         $this->assertInstanceOf('Cake\ORM\Query', $query);
         $this->assertNull($query->clause('where'));
+    }
+
+    public function testQueryBuilderWithScope()
+    {
+        $settings = [
+            'scope' => [
+                'is_deleted' => 1
+            ]
+        ];
+        $method = new \ReflectionMethod(
+            'JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior',
+            '_queryBuilder'
+        );
+        $method->setAccessible(true);
+        $query = $method->invoke(new KeyValuePairsBehavior($this->table, $settings));
+        $this->assertInstanceOf('Cake\ORM\Query', $query);
+        $this->assertContains('WHERE "is_deleted" =', $query->sql());
     }
 }

@@ -152,7 +152,7 @@ class KeyValuePairsBehavior extends Behavior
             ->hydrate(false);
 
         if ($this->config('scope')) {
-            $q->andWhere($this->config('scope'));
+            $q->where($this->config('scope'));
         }
 
         return $q;
@@ -166,8 +166,7 @@ class KeyValuePairsBehavior extends Behavior
      */
     protected function _keysFromCache(array $keys)
     {
-        $pairs = $this->_cache();
-        return array_intersect($pairs, Hash::normalize($keys));
+        return array_intersect_key($this->_cache(), Hash::normalize($keys));
     }
 
     /**
