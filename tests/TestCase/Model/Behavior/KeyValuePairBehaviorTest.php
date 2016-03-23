@@ -22,7 +22,7 @@ class KeyValuePairBehaviorTest extends TestCase
     private $table;
     private $entity;
     private $behaviorMethods;
-    private $datasourceConnection = 'default';
+    private $datasourceConnection;
 
     public function setUp()
     {
@@ -30,6 +30,7 @@ class KeyValuePairBehaviorTest extends TestCase
 
         $this->table = $this->getMock('Cake\ORM\Table');
         $this->behaviorMethods = get_class_methods('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior');
+        $this->datasourceConnection = 'default';
 
         $this->entity = new Entity([
             'key' => 'key1',
@@ -41,6 +42,9 @@ class KeyValuePairBehaviorTest extends TestCase
             'duration' => '+1 week',
             'path' => CACHE
         ]);
+
+        debug(Hash::get($_ENV, 'db_dsn', getenv('db_dsn')));
+        debug(getenv('db_dsn'));
 
         $db_dsn = Hash::get($_ENV, 'db_dsn', getenv('db_dsn'));
 
@@ -58,7 +62,7 @@ class KeyValuePairBehaviorTest extends TestCase
         TableRegistry::clear();
 
         if ($this->datasourceConnection != 'default') {
-            ConnectionManager::drop('test');
+            ConnectionManager::drop($this->datasourceConnection);
         }
     }
 
