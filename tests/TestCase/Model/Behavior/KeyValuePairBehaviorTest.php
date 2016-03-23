@@ -56,6 +56,10 @@ class KeyValuePairBehaviorTest extends TestCase
 
         Cache::drop('configs');
         TableRegistry::clear();
+
+        if ($this->datasourceConnection != 'default') {
+            ConnectionManager::drop('test');
+        }
     }
 
     public function testBeforeSaveAllowedKeysFalse()
