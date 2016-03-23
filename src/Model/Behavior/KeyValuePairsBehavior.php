@@ -142,7 +142,7 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return \Cake\ORM\Query The query builder
      */
-    private function __queryBuilder()
+    protected function _queryBuilder()
     {
         $q = $this->_table->find('list', [
                 'keyField' => $this->config('fields.key'),
@@ -164,7 +164,7 @@ class KeyValuePairsBehavior extends Behavior
      * @param array $keys The keys you want the values of
      * @return array The key value pairs
      */
-    private function __keysFromCache(array $keys)
+    protected function _keysFromCache(array $keys)
     {
         $pairs = $this->_cache();
         return array_intersect($pairs, Hash::normalize($keys));
@@ -175,9 +175,9 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @return array All saved key value pairs
      */
-    private function __cache()
+    protected function _cache()
     {
-        $queryBuilder = $this->__queryBuilder();
+        $queryBuilder = $this->_queryBuilder();
         return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder) {
             return $queryBuilder->toArray();
         }, $this->config('cacheKey'));
