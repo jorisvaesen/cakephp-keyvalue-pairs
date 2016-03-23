@@ -129,7 +129,6 @@ class KeyValuePairsBehavior extends Behavior
                 ->toArray();
         }
 
-
         if (!count($pairs) || ($requireAll && count($keys) != count($pairs))) {
             return false;
         }

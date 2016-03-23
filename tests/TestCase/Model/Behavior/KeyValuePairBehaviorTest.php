@@ -208,6 +208,40 @@ class KeyValuePairBehaviorTest extends TestCase
         $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
     }
 
+    public function testFindPairs()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+        $expected = ['invoice_prefix' => 'INV-2016', 'invoice_next_number' => '1234'];
+        $this->assertEquals($expected, $behavior->findPairs(['invoice_prefix', 'invoice_next_number']));
+    }
+
+    public function testFindPairsNotExistingKeys()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+        $this->assertFalse($behavior->findPairs(['not_existing_key1', 'not_existing_key2']));
+    }
+
+    public function testFindPairsRequireAllOk()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+        $expected = ['invoice_prefix' => 'INV-2016', 'invoice_next_number' => '1234'];
+        $this->assertEquals($expected, $behavior->findPairs(['invoice_prefix', 'invoice_next_number'], true));
+    }
+
+    public function testFindPairsRequireAllFail()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+        $this->assertFalse($behavior->findPairs(['invoice_prefix', 'not_existing_key1'], true));
+    }
+
     public function testQueryBuilder()
     {
         $method = new \ReflectionMethod(
