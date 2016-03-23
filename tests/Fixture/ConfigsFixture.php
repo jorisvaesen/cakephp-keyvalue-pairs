@@ -14,7 +14,7 @@ class ConfigsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'integer'],
         'key' => ['type' => 'string'],
-        'value' => ['type' => 'string'],
+        'value' => ['type' => 'string']
     ];
     /**
      * records property

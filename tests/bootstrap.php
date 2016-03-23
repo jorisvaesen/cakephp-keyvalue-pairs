@@ -56,6 +56,11 @@ $cache = [
         'path' => CACHE . 'models/',
         'serialize' => 'File',
         'duration' => '+10 seconds'
+    ],
+    'configs' => [
+        'className' => 'File',
+        'duration' => '+1 week',
+        'path' => CACHE
     ]
 ];
 
@@ -73,5 +78,6 @@ if (!getenv('db_dsn')) {
 
 Cake\Datasource\ConnectionManager::config('test', [
     'url' => getenv('db_dsn'),
-    'timezone' => 'UTC'
+    'timezone' => 'UTC',
+    'quoteIdentifiers' => true
 ]);
