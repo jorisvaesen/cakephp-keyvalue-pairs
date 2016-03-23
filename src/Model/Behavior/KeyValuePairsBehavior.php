@@ -19,7 +19,7 @@ class KeyValuePairsBehavior extends Behavior
         'scope' => false,
         'preventDeletion' => false,
         'allowedKeys' => false,
-        'caching' => false,
+        'cache' => false,
         'cacheKey' => 'default'
     ];
 
@@ -50,7 +50,7 @@ class KeyValuePairsBehavior extends Behavior
     public function afterSave(Event $event, Entity $entity, ArrayObject $options)
     {
         if ($this->config('cache')) {
-            Cache::delete('key_value_pairs_' . $this->_table->table());
+            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheKey'));
         }
     }
 
@@ -81,7 +81,7 @@ class KeyValuePairsBehavior extends Behavior
     public function afterDelete(Event $event, Entity $entity, ArrayObject $options)
     {
         if ($this->config('cache')) {
-            Cache::delete('key_value_pairs_' . $this->_table->table());
+            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheKey'));
         }
     }
 
@@ -94,9 +94,9 @@ class KeyValuePairsBehavior extends Behavior
     public function getValueByKey($key)
     {
         if ($this->config('cache')) {
-            $pair = $this->__keysFromCache([$key]);
+            $pair = $this->_keysFromCache([$key]);
         } else {
-            $pair = $this->__queryBuilder()
+            $pair = $this->_queryBuilder()
                 ->andWhere([$this->config('fields.key') => $key])
                 ->limit(1)
                 ->toArray();
@@ -119,10 +119,10 @@ class KeyValuePairsBehavior extends Behavior
     public function getValuesByKeys(array $keys, $requireAll = true)
     {
         if ($this->config('cache')) {
-            $pairs = $this->__keysFromCache($keys);
+            $pairs = $this->_keysFromCache($keys);
         } else {
             $keyField = $this->config('fields.key');
-            $pairs = $this->__queryBuilder()
+            $pairs = $this->_queryBuilder()
                 ->andWhere(function ($exp, $q) use ($keyField, $keys) {
                     return $exp->in($keyField, $keys);
                 })
