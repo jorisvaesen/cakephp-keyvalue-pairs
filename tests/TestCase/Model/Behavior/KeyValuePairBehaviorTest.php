@@ -11,7 +11,6 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Cake\Utility\Hash;
 use JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior;
 
 class KeyValuePairBehaviorTest extends TestCase
@@ -22,7 +21,6 @@ class KeyValuePairBehaviorTest extends TestCase
     private $table;
     private $entity;
     private $behaviorMethods;
-    private $datasourceConnection;
 
     public function setUp()
     {
@@ -30,7 +28,6 @@ class KeyValuePairBehaviorTest extends TestCase
 
         $this->table = $this->getMock('Cake\ORM\Table');
         $this->behaviorMethods = get_class_methods('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior');
-        $this->datasourceConnection = 'default';
 
         $this->entity = new Entity([
             'key' => 'key1',
@@ -42,16 +39,6 @@ class KeyValuePairBehaviorTest extends TestCase
             'duration' => '+1 week',
             'path' => CACHE
         ]);
-
-        debug(Hash::get($_ENV, 'db_dsn', getenv('db_dsn')));
-        debug(getenv('db_dsn'));
-
-        $db_dsn = Hash::get($_ENV, 'db_dsn', getenv('db_dsn'));
-
-        if ($db_dsn) {
-            ConnectionManager::config('test', ['url' => $db_dsn]);
-            $this->datasourceConnection = 'test';
-        }
     }
 
     public function tearDown()
@@ -60,10 +47,6 @@ class KeyValuePairBehaviorTest extends TestCase
 
         Cache::drop('configs');
         TableRegistry::clear();
-
-        if ($this->datasourceConnection != 'default') {
-            ConnectionManager::drop($this->datasourceConnection);
-        }
     }
 
     public function testBeforeSaveAllowedKeysFalse()
@@ -222,7 +205,7 @@ class KeyValuePairBehaviorTest extends TestCase
                 'key' => ['type' => 'string'],
                 'value' => ['type' => 'string']
             ],
-            'connection' => ConnectionManager::get($this->datasourceConnection)
+            'connection' => ConnectionManager::get('test')
         ]);
 
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
@@ -242,7 +225,7 @@ class KeyValuePairBehaviorTest extends TestCase
                 'key' => ['type' => 'string'],
                 'value' => ['type' => 'string']
             ],
-            'connection' => ConnectionManager::get($this->datasourceConnection)
+            'connection' => ConnectionManager::get('test')
         ]);
 
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
