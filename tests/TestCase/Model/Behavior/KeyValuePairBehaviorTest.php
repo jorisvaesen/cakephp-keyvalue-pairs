@@ -242,6 +242,52 @@ class KeyValuePairBehaviorTest extends TestCase
         $this->assertFalse($behavior->findPairs(['invoice_prefix', 'not_existing_key1'], true));
     }
 
+    public function testFindPairsWithCacheEnabled()
+    {
+        $this->loadFixtures('Configs');
+        $settings = [
+            'cache' => true
+        ];
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+        $expected = ['invoice_prefix' => 'INV-2016', 'invoice_next_number' => '1234'];
+        $this->assertEquals($expected, $behavior->findPairs(['invoice_prefix', 'invoice_next_number']));
+    }
+
+    public function testFindPairsNotExistingKeysWithCacheEnabled()
+    {
+        $this->loadFixtures('Configs');
+        $settings = [
+            'cache' => true
+        ];
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+        $this->assertFalse($behavior->findPairs(['not_existing_key1', 'not_existing_key2']));
+    }
+
+    public function testFindPairsRequireAllOkWithCacheEnabled()
+    {
+        $this->loadFixtures('Configs');
+        $settings = [
+            'cache' => true
+        ];
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+        $expected = ['invoice_prefix' => 'INV-2016', 'invoice_next_number' => '1234'];
+        $this->assertEquals($expected, $behavior->findPairs(['invoice_prefix', 'invoice_next_number'], true));
+    }
+
+    public function testFindPairsRequireAllFailWithCacheEnabled()
+    {
+        $this->loadFixtures('Configs');
+        $settings = [
+            'cache' => true
+        ];
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+        $this->assertFalse($behavior->findPairs(['invoice_prefix', 'not_existing_key1'], true));
+    }
+
     public function testQueryBuilder()
     {
         $method = new \ReflectionMethod(
