@@ -91,7 +91,7 @@ class KeyValuePairsBehavior extends Behavior
      * @param string $key The key you want the value of
      * @return string|bool
      */
-    public function getValueByKey($key)
+    public function findPair($key)
     {
         if ($this->config('cache')) {
             $pair = $this->_keysFromCache([$key]);
@@ -106,7 +106,7 @@ class KeyValuePairsBehavior extends Behavior
             return false;
         }
 
-        return $pair[$this->config('fields.value')];
+        return $pair[$key];
     }
 
     /**
@@ -116,7 +116,7 @@ class KeyValuePairsBehavior extends Behavior
      * @param bool $requireAll Fail if not all keys exist
      * @return string|bool
      */
-    public function getValuesByKeys(array $keys, $requireAll = true)
+    public function findPairs(array $keys, $requireAll = true)
     {
         if ($this->config('cache')) {
             $pairs = $this->_keysFromCache($keys);

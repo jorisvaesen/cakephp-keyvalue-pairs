@@ -5,12 +5,19 @@ namespace JorisVaesen\KeyValuePairs\Test\TestCase\Model\Behavior;
 use ArrayObject;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
 use Cake\ORM\Entity;
+use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior;
 
 class KeyValuePairBehaviorTest extends TestCase
 {
+    public $fixtures = ['plugin.joris_vaesen\key_value_pairs.configs'];
+    public $autoFixtures = false;
+
     private $table;
     private $entity;
     private $behaviorMethods;
@@ -39,6 +46,7 @@ class KeyValuePairBehaviorTest extends TestCase
         parent::tearDown();
 
         Cache::drop('configs');
+        TableRegistry::clear();
     }
 
     public function testBeforeSaveAllowedKeysFalse()
@@ -183,5 +191,67 @@ class KeyValuePairBehaviorTest extends TestCase
         $behavior->afterDelete(new Event('fake.event'), $this->entity, new ArrayObject);
 
         $this->assertEquals(Cache::read('key_value_pairs_' . $this->table->table(), 'default'), 'sample value');
+    }
+
+    public function testFindPair()
+    {
+        $this->loadFixtures('Configs');
+
+        $table = new Table([
+            'table' => 'configs',
+            'alias' => 'Configs',
+            'schema' => [
+                'id' => ['type' => 'integer'],
+                'key' => ['type' => 'string'],
+                'value' => ['type' => 'string']
+            ],
+            'connection' => ConnectionManager::get('default')
+        ]);
+
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$table, []]);
+        $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
+    }
+
+    public function testFindPairNotExistingKey()
+    {
+        $this->loadFixtures('Configs');
+
+        $table = new Table([
+            'table' => 'configs',
+            'alias' => 'Configs',
+            'schema' => [
+                'id' => ['type' => 'integer'],
+                'key' => ['type' => 'string'],
+                'value' => ['type' => 'string']
+            ],
+            'connection' => ConnectionManager::get('default')
+        ]);
+
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$table, []]);
+        $this->assertFalse($behavior->findPair('not_existing_key'));
+    }
+
+    public function testQueryBuilder()
+    {
+        $table = new Table([
+            'table' => 'configs',
+            'alias' => 'Configs',
+            'schema' => [
+                'id' => ['type' => 'integer'],
+                'key' => ['type' => 'string'],
+                'value' => ['type' => 'string']
+            ]
+        ]);
+
+        $method = new \ReflectionMethod(
+            'JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', '_queryBuilder'
+        );
+        $method->setAccessible(true);
+        $query = $method->invoke(new KeyValuePairsBehavior($table, []));
+
+        $this->assertInstanceOf('Cake\ORM\Query', $query);
+        $this->assertNull($query->clause('where'));
     }
 }
