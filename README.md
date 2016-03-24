@@ -9,17 +9,31 @@ Map key-value pairs between datasource and application.
 
 ## Installation
 
-Using composer:
+### Using composer
+
+Run the following command
 
 ```
-composer require jorisvaesen/cakephp-keyvalue-pairs
+composer require jorisvaesen/cakephp-keyvalue-pairs:"~3.0"
 ```
 
-Enable plugin by adding this line to your bootstrap.php:
+or copy the json snippet for the latest version into your project’s composer.json.
+
+```
+{
+    "require": {
+        "jorisvaesen/cakephp-keyvalue-pairs": "~3.0"
+    }
+}
+```
+
+You need to enable the plugin in your `config/bootstrap.php` file:
 
 ```php
 Plugin::load('JorisVaesen/KeyValuePairs');
 ```
+
+If you are already using `Plugin::loadAll();`, then this is not necessary.
 
 ## Usage
 
@@ -42,3 +56,8 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 | allowedKeys  | `false`  | `array` of allowed keys or `false` to allow any |
 | cache  | `false`  | Enable or disable caching  |
 | cacheKey  | `'default'`  | A custom cache key that should be used |
+
+### Available functions
+
+* `findPair($key)` get the value of `$key`.
+* `findPairs($keys, $requireAll = true)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found. 
