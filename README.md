@@ -55,7 +55,7 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 | preventDeletion  | `false`  | Prevent pairs from being deleted. `true` to disallow deletion, `array` to specify keys that should not be removed |
 | allowedKeys  | `false`  | `array` of allowed keys or `false` to allow any |
 | cache  | `false`  | Enable or disable caching  |
-| cacheConfig  | `'default'`  | A custom cache key that should be used |
+| cacheConfig  | `'default'`  | A custom cache config that should be used |
 
 ### Available functions
 
