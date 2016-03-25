@@ -59,8 +59,8 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 
 ### Available functions
 
-* `findPair($key)` get the value of `$key`.
-* `findPairs($keys, $requireAll = true)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found.
+* `findPair($key, $asEntity = false)` get the value of `$key`. When `$asEntity` is set true, it returns the complete entity (useful when you want to make changes to it).
+* `findPairs($keys, $requireAll = true, $asEntity = false)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found. When `$asEntity` is set true, it returns the complete entities (useful when you want to make changes to it).
 
 ### Tips
 
@@ -71,7 +71,7 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 
 ## Example
 
-Lets say you have an application where the user can create invoices which should get a prefix and postfix when created. Every invoice gets these static values but the user should be able to change them over time for new invoices (like when they use the current year in it).
+Lets say you have an application where the user can create invoices which should get a prefix and number when created, but this user wants to manage these values for new invoices.
 
 First we create a database table to store the key value pairs and insert the defaults.
 
@@ -87,7 +87,7 @@ CREATE TABLE `configs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_prefix', 'INV-', 0);
-INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_postfix', '-2016', 0);
+INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_next_number', '2016001', 0);
 ```
 
 We create a cache config that should be used by the plugin.
@@ -109,32 +109,45 @@ public function initialize(array $config)
     ...
     
     $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
+        'fields' => [               //  We just leave this the defaults
+            'key' => 'key',
+            'value' => 'value'
+        ],
         'cache' => true,            //  Enable caching
         'cacheConfig' => 'pairs',   //  Tell the plugin to use the pairs cache config
-        'scope' => [                // Just as example to show how to use extra conditions when fetching pairs
+        'scope' => [                //  Just as example to show how to use extra conditions when fetching pairs
             'is_deleted' => false
         ],
-        'preventDeletion' => true,  // Prevents us from deleting any record in this table (and thereby possibly break the app)
-        'allowedKeys' => [          // Prevents us from saving any other keys than the ones specified here
+        'preventDeletion' => true,  //  Prevents us from deleting any record in this table (and thereby possibly break the app)
+        'allowedKeys' => [          //  Prevents us from saving any other keys than the ones specified here
             'invoice_prefix',
-            'invoice_postfix'
+            'invoice_next_number'
         ]
     ]);
 }
 ```
 
-Now when a new invoice is created we can fetch the prefix and the postfix for it.
+Now when a new invoice is created we can grab the values and increase the invoice number for new invoices (this automatically invalidates the cache).
 
 ```php
 public function add() 
 {
     ...
     
-    $pairs = TableRegistry::get('Configs')->findPairs(['invoice_prefix', 'invoice_postfix], true);
+    $pairsTable = TableRegistry::get('Configs');
+    // We set $requireAll and $asEntity to true to be sure all keys are there and we can make changes to it later
+    $pairs = $pairsTable->findPairs(['invoice_prefix', 'invoice_postfix], true, true);
     
-    $invoice->number = $pairs['invoice_prefix'] . $invoice_number . $pairs['invoice_postfix'];
+    if (!$pairs) {
+        // throw error
+    }
     
-    $this->Invoices->save($invoice);
+    $invoice->number = $pairs['invoice_prefix']->value . $pairs['invoice_next_number']->value;
+    
+    if ($this->Invoices->save($invoice)) {
+        $pairs['invoice_next_number']->value = (int)$pairs['invoice_next_number']->value + 1; 
+        $pairsTable->save($pairs['invoice_next_number']);
+    }
     
     ...
 }

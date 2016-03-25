@@ -46,6 +46,7 @@ class KeyValuePairBehaviorTest extends TestCase
     {
         parent::tearDown();
         TableRegistry::clear();
+        Cache::clear();
     }
 
     public function testBeforeSaveAllowedKeysFalse()
@@ -189,6 +190,17 @@ class KeyValuePairBehaviorTest extends TestCase
         $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
     }
 
+    public function testFindPairAsEntity()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+        $pair = $behavior->findPair('invoice_prefix', true);
+
+        $this->assertInstanceOf('Cake\ORM\Entity', $pair);
+        $this->assertEquals('INV-2016', $pair->{'value'});
+    }
+
     public function testFindPairNotExistingKey()
     {
         $this->loadFixtures('Configs');
@@ -205,6 +217,7 @@ class KeyValuePairBehaviorTest extends TestCase
         ];
         $methods = array_diff($this->behaviorMethods, ['config', 'findPair']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, $settings]);
+
         $this->assertEquals('INV-2016', $behavior->findPair('invoice_prefix'));
     }
 
@@ -215,6 +228,20 @@ class KeyValuePairBehaviorTest extends TestCase
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
         $expected = ['invoice_prefix' => 'INV-2016', 'invoice_next_number' => '1234'];
         $this->assertEquals($expected, $behavior->findPairs(['invoice_prefix', 'invoice_next_number']));
+    }
+
+    public function testFindPairsAsEntities()
+    {
+        $this->loadFixtures('Configs');
+        $methods = array_diff($this->behaviorMethods, ['config', 'findPairs']);
+        $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->table, []]);
+
+        $pairs = $behavior->findPairs(['invoice_prefix', 'invoice_next_number'], true, true);
+
+        $this->assertInstanceOf('Cake\ORM\Entity', $pairs['invoice_prefix']);
+        $this->assertInstanceOf('Cake\ORM\Entity', $pairs['invoice_next_number']);
+        $this->assertEquals('INV-2016', $pairs['invoice_prefix']->value);
+        $this->assertEquals('1234', $pairs['invoice_next_number']->value);
     }
 
     public function testFindPairsNotExistingKeys()

@@ -4,6 +4,7 @@ namespace JorisVaesen\KeyValuePairs\Model\Behavior;
 
 use ArrayObject;
 use Cake\Cache\Cache;
+use Cake\Collection\Collection;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
@@ -89,24 +90,29 @@ class KeyValuePairsBehavior extends Behavior
      * Get value by key
      *
      * @param string $key The key you want the value of
+     * @param bool $asEntity Whether the pair should be returned as entity
      * @return string|bool
      */
-    public function findPair($key)
+    public function findPair($key, $asEntity = false)
     {
         if ($this->config('cache')) {
             $pair = $this->_keysFromCache([$key]);
+            $pair = $pair[$key];
         } else {
             $pair = $this->_queryBuilder()
                 ->andWhere([$this->config('fields.key') => $key])
-                ->limit(1)
-                ->toArray();
+                ->first();
         }
 
         if (!$pair) {
             return false;
         }
 
-        return $pair[$key];
+        if ($asEntity) {
+            return $pair;
+        }
+
+        return $pair->{$this->config('fields.value')};
     }
 
     /**
@@ -114,9 +120,10 @@ class KeyValuePairsBehavior extends Behavior
      *
      * @param array $keys The keys you want the value of
      * @param bool $requireAll Fail if not all keys exist
+     * @param bool $asEntity Whether the pairs should be returned as entities
      * @return string|bool
      */
-    public function findPairs(array $keys, $requireAll = true)
+    public function findPairs(array $keys, $requireAll = true, $asEntity = false)
     {
         if ($this->config('cache')) {
             $pairs = $this->_keysFromCache($keys);
@@ -126,14 +133,23 @@ class KeyValuePairsBehavior extends Behavior
                 ->andWhere(function ($exp, $q) use ($keyField, $keys) {
                     return $exp->in($keyField, $keys);
                 })
-                ->toArray();
+                ->all();
         }
 
         if (!count($pairs) || ($requireAll && count($keys) != count($pairs))) {
             return false;
         }
 
-        return $pairs;
+        if ($asEntity) {
+            return (new Collection($pairs))->combine($this->config('fields.key'), function ($entity) {
+                return $entity;
+            })->toArray();
+        }
+
+        return (new Collection($pairs))->combine(
+            $this->config('fields.key'),
+            $this->config('fields.value')
+        )->toArray();
     }
 
     /**
@@ -143,12 +159,9 @@ class KeyValuePairsBehavior extends Behavior
      */
     protected function _queryBuilder()
     {
-        $q = $this->_table->find('list', [
-                'keyField' => $this->config('fields.key'),
-                'valueField' => $this->config('fields.value')
-            ])
-            ->contain([])
-            ->hydrate(false);
+        $q = $this->_table
+                ->find()
+                ->contain([]);
 
         if ($this->config('scope')) {
             $q->andWhere($this->config('scope'));
@@ -175,9 +188,12 @@ class KeyValuePairsBehavior extends Behavior
      */
     protected function _cache()
     {
+        $keyField = $this->config('fields.key');
         $queryBuilder = $this->_queryBuilder();
-        return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder) {
-            return $queryBuilder->toArray();
+        return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder, $keyField) {
+            return (new Collection($queryBuilder->all()))->combine($keyField, function ($entity) {
+                return $entity;
+            })->toArray();
         }, $this->config('cacheConfig'));
     }
 }
