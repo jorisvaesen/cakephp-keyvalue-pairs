@@ -62,6 +62,84 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 * `findPair($key)` get the value of `$key`.
 * `findPairs($keys, $requireAll = true)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found.
 
+### Tips
+
+* **Cache invalidation happens on afterSave and afterDelete callbacks, when you use `updateAll`, these callbacks don't get called. In this case you should invalidate the cache yourself.**
+* Caching is advisable and its duration can be set to `+999 days` since the cached result gets invalidated automatically when a pair gets saved or removed.
+* Caching automatically saves all the pairs in the database and extracts the specific values from it. If you want a cache file for each record, disable caching in this plugin and do the caching yourself or suggest the functionality by doing a pull request.
+* This plugin is rather new so it can contain bugs. If you find any or want to suggest enhancements, please use the issue tracker [here](https://github.com/jorisvaesen/cakephp-keyvalue-pairs/issues).
+
+## Example
+
+Lets say you have an application where the user can create invoices which should get a prefix and postfix when created. Every invoice gets these static values but the user should be able to change them over time for new invoices (like when they use the current year in it).
+
+First we create a database table to store the key value pairs and insert the defaults.
+
+```
+CREATE TABLE `configs` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `key` varchar(255) NOT NULL,
+    `value` VARCHAR(255) NOT NULL,
+    `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
+    `modified` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `key_index` (`key`),
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_prefix', 'INV-', 0);
+INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_postfix', '-2016', 0);
+```
+
+We create a cache config that should be used by the plugin.
+
+```php
+Cache::config('configs', [
+    'className' => 'File',
+    'duration' => '+999 days',  // cache gets invalidated automatically when a pair is saved or removed
+    'path' => CACHE,
+    'prefix' => 'configs_'
+]);
+```
+
+Next we attach the behavior to our table in `Model/Table/ConfigsTable.php`.
+
+```php
+public function initialize(array $config) 
+{
+    ...
+    
+    $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
+        'cache' => true,
+        'cacheKey' => 'configs',
+        'scope' => [                // Just as example to show how to use extra conditions when fetching pairs
+            'is_deleted' => false
+        ],
+        'preventDeletion' => true,  // Prevents us from deleting any record in this table (and thereby possibly break the app)
+        'allowedKeys' => [          // Prevents us from saving any other keys than the ones specified here
+            'invoice_prefix',
+            'invoice_postfix'
+        ]
+    ]);
+}
+```
+
+Now when a new invoice is created we can fetch the prefix and the postfix for it.
+
+```php
+public function add() 
+{
+    ...
+    
+    $pairs = TableRegistry::get('Configs')->findPairs(['invoice_prefix', 'invoice_postfix], true);
+    
+    $invoice->number = $pairs['invoice_prefix'] . $invoice_number . $pairs['invoice_postfix'];
+    
+    $this->Invoices->save($invoice);
+    
+    ...
+}
+```
+
 ## License
 
 The MIT License (MIT)

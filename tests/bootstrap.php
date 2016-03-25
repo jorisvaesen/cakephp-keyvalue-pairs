@@ -59,7 +59,7 @@ $cache = [
     ],
     'configs' => [
         'className' => 'File',
-        'duration' => '+1 week',
+        'duration' => '+999 days',
         'path' => CACHE
     ]
 ];
