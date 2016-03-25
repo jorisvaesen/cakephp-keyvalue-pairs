@@ -55,7 +55,7 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 | preventDeletion  | `false`  | Prevent pairs from being deleted. `true` to disallow deletion, `array` to specify keys that should not be removed |
 | allowedKeys  | `false`  | `array` of allowed keys or `false` to allow any |
 | cache  | `false`  | Enable or disable caching  |
-| cacheKey  | `'default'`  | A custom cache key that should be used |
+| cacheConfig  | `'default'`  | A custom cache key that should be used |
 
 ### Available functions
 
@@ -93,11 +93,11 @@ INSERT INTO `configs` (`key`, `value`, `is_deleted`) VALUES ('invoice_postfix', 
 We create a cache config that should be used by the plugin.
 
 ```php
-Cache::config('configs', [
+Cache::config('pairs', [
     'className' => 'File',
     'duration' => '+999 days',  // cache gets invalidated automatically when a pair is saved or removed
     'path' => CACHE,
-    'prefix' => 'configs_'
+    'prefix' => 'pairs_'
 ]);
 ```
 
@@ -109,8 +109,8 @@ public function initialize(array $config)
     ...
     
     $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
-        'cache' => true,
-        'cacheKey' => 'configs',
+        'cache' => true,            //  Enable caching
+        'cacheConfig' => 'pairs',   //  Tell the plugin to use the pairs cache config
         'scope' => [                // Just as example to show how to use extra conditions when fetching pairs
             'is_deleted' => false
         ],

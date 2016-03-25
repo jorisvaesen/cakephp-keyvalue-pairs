@@ -20,7 +20,7 @@ class KeyValuePairsBehavior extends Behavior
         'preventDeletion' => false,
         'allowedKeys' => false,
         'cache' => false,
-        'cacheKey' => 'default'
+        'cacheConfig' => 'default'
     ];
 
     /**
@@ -50,7 +50,7 @@ class KeyValuePairsBehavior extends Behavior
     public function afterSave(Event $event, Entity $entity, ArrayObject $options)
     {
         if ($this->config('cache')) {
-            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheKey'));
+            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheConfig'));
         }
     }
 
@@ -81,7 +81,7 @@ class KeyValuePairsBehavior extends Behavior
     public function afterDelete(Event $event, Entity $entity, ArrayObject $options)
     {
         if ($this->config('cache')) {
-            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheKey'));
+            Cache::delete('key_value_pairs_' . $this->_table->table(), $this->config('cacheConfig'));
         }
     }
 
@@ -178,6 +178,6 @@ class KeyValuePairsBehavior extends Behavior
         $queryBuilder = $this->_queryBuilder();
         return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder) {
             return $queryBuilder->toArray();
-        }, $this->config('cacheKey'));
+        }, $this->config('cacheConfig'));
     }
 }

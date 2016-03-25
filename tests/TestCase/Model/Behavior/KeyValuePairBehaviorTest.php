@@ -85,21 +85,21 @@ class KeyValuePairBehaviorTest extends TestCase
     {
         $settings = [
             'cache' => true,
-            'cacheKey' => 'configs'
+            'cacheConfig' => 'configs'
         ];
         $methods = array_diff($this->behaviorMethods, ['config', 'afterSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
-        Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheKey']);
+        Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheConfig']);
         $behavior->afterSave(new Event('fake.event'), $this->entity, new ArrayObject);
 
-        $this->assertFalse(Cache::read('key_value_pairs_' . $this->tableMock->table(), $settings['cacheKey']));
+        $this->assertFalse(Cache::read('key_value_pairs_' . $this->tableMock->table(), $settings['cacheConfig']));
     }
 
     public function testAfterSaveCacheKey()
     {
         $settings = [
             'cache' => true,
-            'cacheKey' => 'configs'
+            'cacheConfig' => 'configs'
         ];
         $methods = array_diff($this->behaviorMethods, ['config', 'afterSave']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
@@ -157,21 +157,21 @@ class KeyValuePairBehaviorTest extends TestCase
     {
         $settings = [
             'cache' => true,
-            'cacheKey' => 'configs'
+            'cacheConfig' => 'configs'
         ];
         $methods = array_diff($this->behaviorMethods, ['config', 'afterDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
-        Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheKey']);
+        Cache::write('key_value_pairs_' . $this->tableMock->table(), 'sample value', $settings['cacheConfig']);
         $behavior->afterDelete(new Event('fake.event'), $this->entity, new ArrayObject);
 
-        $this->assertFalse(Cache::read('key_value_pairs_' . $this->tableMock->table(), $settings['cacheKey']));
+        $this->assertFalse(Cache::read('key_value_pairs_' . $this->tableMock->table(), $settings['cacheConfig']));
     }
 
     public function testAfterDeleteCacheKey()
     {
         $settings = [
             'cache' => true,
-            'cacheKey' => 'configs'
+            'cacheConfig' => 'configs'
         ];
         $methods = array_diff($this->behaviorMethods, ['config', 'afterDelete']);
         $behavior = $this->getMock('JorisVaesen\KeyValuePairs\Model\Behavior\KeyValuePairsBehavior', $methods, [$this->tableMock, $settings]);
