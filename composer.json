@@ -2,7 +2,7 @@
     "name": "jorisvaesen/cakephp-keyvalue-pairs",
     "description": "CakePHP plugin to handle key-value pairs to be mapped between datasource and application",
     "type": "cakephp-plugin",
-    "keywords": ["cakephp", "key-value pairs"],
+    "keywords": ["cakephp", "key-value pairs", "orm"],
     "homepage": "https://github.com/jorisvaesen/cakephp-keyvalue-pairs",
     "license": "MIT",
     "authors": [
@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "cakephp/cakephp": "~3.0",
+        "cakephp/orm": "~3.0",
         "php": ">=5.5"
     },
     "require-dev": {
