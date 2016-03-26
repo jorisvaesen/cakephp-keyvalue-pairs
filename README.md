@@ -136,7 +136,7 @@ public function add()
     
     $pairsTable = TableRegistry::get('Configs');
     // We set $requireAll and $asEntity to true to be sure all keys are there and we can make changes to it later
-    $pairs = $pairsTable->findPairs(['invoice_prefix', 'invoice_postfix], true, true);
+    $pairs = $pairsTable->findPairs(['invoice_prefix', 'invoice_postfix'], true, true);
     
     if (!$pairs) {
         // throw error
