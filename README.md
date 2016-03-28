@@ -1,4 +1,8 @@
-# CakePHP 3 Key Value Pairs [![Build Status](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs.svg?branch=master)](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs) [![Coverage Status](https://coveralls.io/repos/github/jorisvaesen/cakephp-keyvalue-pairs/badge.svg?branch=master)](https://coveralls.io/github/jorisvaesen/cakephp-keyvalue-pairs?branch=master)
+# CakePHP 3 Key Value Pairs 
+[![Build Status](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs.svg?branch=master)](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs) 
+[![Coverage Status](https://coveralls.io/repos/github/jorisvaesen/cakephp-keyvalue-pairs/badge.svg?branch=master)](https://coveralls.io/github/jorisvaesen/cakephp-keyvalue-pairs?branch=master)
+[![License](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/license)](https://packagist.org/packages/jorisvaesen/cakephp-keyvalue-pairs)
+[![Latest Stable Version](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/v/stable)](https://packagist.org/packages/jorisvaesen/cakephp-keyvalue-pairs/releases)
 
 Map key-value pairs between datasource and application.
 
@@ -27,7 +31,13 @@ or copy the json snippet for the latest version into your project’s `composer.
 }
 ```
 
-You need to enable the plugin in your `config/bootstrap.php` file:
+You need to enable the plugin
+ 
+```
+bin/cake plugin load JorisVaesen/KeyValuePairs
+```
+
+or copy this line into your `config/bootstrap.php` file:
 
 ```php
 Plugin::load('JorisVaesen/KeyValuePairs');
@@ -37,7 +47,7 @@ If you are already using `Plugin::loadAll();`, then this is not necessary.
 
 ## Usage
 
-### Attach behavior
+### Add behavior
 
 ```php
 $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
@@ -101,7 +111,7 @@ Cache::config('pairs', [
 ]);
 ```
 
-Next we attach the behavior to our table in `Model/Table/ConfigsTable.php`.
+Next we add the behavior to our table in `Model/Table/ConfigsTable.php`.
 
 ```php
 public function initialize(array $config) 
@@ -109,7 +119,7 @@ public function initialize(array $config)
     ...
     
     $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
-        'fields' => [               //  We just leave this the defaults
+        'fields' => [               //  We just leave this the default
             'key' => 'key',
             'value' => 'value'
         ],
@@ -119,7 +129,7 @@ public function initialize(array $config)
             'is_deleted' => false
         ],
         'preventDeletion' => true,  //  Prevents us from deleting any record in this table (and thereby possibly break the app)
-        'allowedKeys' => [          //  Prevents us from saving any other keys than the ones specified here
+        'allowedKeys' => [          //  Prevents us from saving any other key than the ones specified here
             'invoice_prefix',
             'invoice_next_number'
         ]
