@@ -1,8 +1,8 @@
 # CakePHP 3 Key Value Pairs 
 [![Build Status](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs.svg?branch=master)](https://travis-ci.org/jorisvaesen/cakephp-keyvalue-pairs) 
 [![Coverage Status](https://coveralls.io/repos/github/jorisvaesen/cakephp-keyvalue-pairs/badge.svg?branch=master)](https://coveralls.io/github/jorisvaesen/cakephp-keyvalue-pairs?branch=master)
-[![License](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/license)](https://packagist.org/packages/jorisvaesen/cakephp-keyvalue-pairs)
-[![Latest Stable Version](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/v/stable)](https://packagist.org/packages/jorisvaesen/cakephp-keyvalue-pairs/releases)
+[![License](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/license)](https://github.com/jorisvaesen/cakephp-keyvalue-pairs#license)
+[![Latest Stable Version](https://poser.pugx.org/jorisvaesen/cakephp-keyvalue-pairs/v/stable)](https://packagist.org/packages/jorisvaesen/cakephp-keyvalue-pairs)
 
 Map key-value pairs between datasource and application.
 
