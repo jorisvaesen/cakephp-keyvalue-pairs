@@ -69,8 +69,8 @@ $this->addBehavior('JorisVaesen/KeyValuePairs.KeyValuePairs', [
 
 ### Available functions
 
-* `findPair($key, $asEntity = false)` get the value of `$key`. When `$asEntity` is set true, it returns the complete entity (useful when you want to make changes to it).
-* `findPairs($keys, $requireAll = true, $asEntity = false)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found. When `$asEntity` is set true, it returns the complete entities (useful when you want to make changes to it).
+* `getPair($key, $asEntity = false)` get the value of `$key`. When `$asEntity` is set true, it returns the complete entity (useful when you want to make changes to it).
+* `getPairs($keys, $requireAll = true, $asEntity = false)` returns an associative array with the keys and its values. When `$requireAll` is set true, the function returns false when not all keys could be found. When `$asEntity` is set true, it returns the complete entities (useful when you want to make changes to it).
 
 ### Tips
 

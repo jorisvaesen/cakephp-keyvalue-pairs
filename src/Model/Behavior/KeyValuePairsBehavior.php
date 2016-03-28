@@ -93,7 +93,7 @@ class KeyValuePairsBehavior extends Behavior
      * @param bool $asEntity Whether the pair should be returned as entity
      * @return string|bool
      */
-    public function findPair($key, $asEntity = false)
+    public function getPair($key, $asEntity = false)
     {
         if ($this->config('cache')) {
             $pair = $this->_keysFromCache([$key]);
@@ -123,33 +123,39 @@ class KeyValuePairsBehavior extends Behavior
      * @param bool $asEntity Whether the pairs should be returned as entities
      * @return string|bool
      */
-    public function findPairs(array $keys, $requireAll = true, $asEntity = false)
+    public function getPairs(array $keys, $requireAll = true, $asEntity = false)
     {
         if ($this->config('cache')) {
             $pairs = $this->_keysFromCache($keys);
+            if (!$asEntity) {
+                $pairs = new Collection($pairs);
+            }
         } else {
             $keyField = $this->config('fields.key');
             $pairs = $this->_queryBuilder()
                 ->andWhere(function ($exp, $q) use ($keyField, $keys) {
                     return $exp->in($keyField, $keys);
-                })
-                ->all();
+                });
+
+            if ($asEntity) {
+                $pairs = $pairs->combine($this->config('fields.key'), function ($entity) {
+                    return $entity;
+                })->toArray();
+            }
+        }
+
+        if (!$asEntity) {
+            $pairs = $pairs->combine(
+                $this->config('fields.key'),
+                $this->config('fields.value')
+            )->toArray();
         }
 
         if (!count($pairs) || ($requireAll && count($keys) != count($pairs))) {
             return false;
         }
 
-        if ($asEntity) {
-            return (new Collection($pairs))->combine($this->config('fields.key'), function ($entity) {
-                return $entity;
-            })->toArray();
-        }
-
-        return (new Collection($pairs))->combine(
-            $this->config('fields.key'),
-            $this->config('fields.value')
-        )->toArray();
+        return $pairs;
     }
 
     /**
@@ -191,7 +197,7 @@ class KeyValuePairsBehavior extends Behavior
         $keyField = $this->config('fields.key');
         $queryBuilder = $this->_queryBuilder();
         return Cache::remember('key_value_pairs_' . $this->_table->table(), function () use ($queryBuilder, $keyField) {
-            return (new Collection($queryBuilder->all()))->combine($keyField, function ($entity) {
+            return $queryBuilder->combine($keyField, function ($entity) {
                 return $entity;
             })->toArray();
         }, $this->config('cacheConfig'));
